@@ -9,29 +9,11 @@ close all;
 %% Load the Camera and Image Data.
 cameras = loadcameradata( datadir );
 
-montage( cat( 4, cameras.Image ) );
-set( gcf(), 'Position', [100 100 600 600] )
-title( 'Dataset' )
-axis off;
-
 %% Silhouettes
 for c=1:numel(cameras)
     cameras(c).Silhouette = getsilhouette( cameras(c).Image );
 end
 
-figure('Position',[100 100 600 300]);
-
-subplot(1,2,1)
-imshow( cameras(c).Image );
-title( 'Original Image' )
-axis off
-
-subplot(1,2,2)
-imshow( cameras(c).Silhouette );
-title( 'Silhouette' )
-axis off
-
-makeFullAxes( gcf );
 
 %% Work out the space
 [xlim,ylim,zlim] = findmodel( cameras );
@@ -40,58 +22,31 @@ t2 = clock;
 etime(t2,t1);
 
 %% Create a Voxel Array
-voxels = makevoxels( xlim, ylim, zlim, 6000000 );
+voxels = makevoxels( xlim, ylim, zlim, 600000 );
 starting_volume = numel( voxels.XData );
 
 figure('Position',[100 100 600 400]);
 showscene( cameras, voxels );
 
-%% Carve the Voxels Using the First Camera Image
 
-voxels = carve( voxels, cameras(1) );
-
-% Show Result
-figure('Position',[100 100 600 300]);
-subplot(1,2,1)
-showscene( cameras(1), voxels );
-title( '1 camera' )
-subplot(1,2,2)
-showsurface( voxels )
-title( 'Result after 1 carving' )
-
-
-% Add More Views
-% Adding more views refines the shape. If we include two more, we already
-% have something recognisable, albeit a bit "boxy".
-voxels = carve( voxels, cameras(4) );
-voxels = carve( voxels, cameras(7) );
-
-% Show Result
-figure('Position',[100 100 600 300]);
-subplot(1,2,1)
-title( '3 cameras' )
-showscene( cameras([1 4 7]), voxels );
-subplot(1,2,2)
-showsurface(voxels)
-title( 'Result after 3 carvings' )
-
-
-%% Now Include All the Views
-
+%% Include All the Views
 for ii=1:numel(cameras)
     voxels = carve( voxels, cameras(ii) );
 end
+
 figure('Position',[100 100 600 700]);
 showsurface(voxels)
 
 set(gca,'Position',[-0.2 0 1.4 0.95])
 
-title( 'Result after 100 carvings' )
+title( 'Result after 10 carvings' )
 az = 0;
-el = 90;
+% changet the vertical elevation of the view point in degree to make the
+% upside up in the view 180
+el = 180;
 view(az, el);
-%view(3);
 axis off
+
 final_volume = numel( voxels.XData );
 fprintf( 'Final volume is %d (%1.2f%%)\n', ...
     final_volume, 100 * final_volume / starting_volume )
@@ -120,7 +75,7 @@ figure('Position',[100 100 600 700]);
 showsurface( voxels );
 set(gca,'Position',[-0.2 0 1.4 0.95])
 axis off
-title( 'Result after 100 carvings with refinement' )
+title( 'Result after 10 carvings with refinement' )
 
 
 %% Final Result
@@ -129,7 +84,7 @@ ptch = showsurface( voxels );
 colorsurface( ptch, cameras );
 set(gca,'Position',[-0.2 0 1.4 0.95])
 axis off
-title( 'Result after 100 carvings with refinement and colour' )
+title( 'Result after 10 carvings with refinement and colour' )
 
 t3 = clock;
 etime(t3,t2);

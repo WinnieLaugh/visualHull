@@ -9,7 +9,7 @@ function cameras = loadcameradata(dataDir, idx)
 
 
 if nargin<2
-    idx = 1:100;
+    idx = 1:10;
 end
 
 %Here is camera definition.

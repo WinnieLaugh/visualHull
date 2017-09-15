@@ -27,29 +27,16 @@ cameras = struct( ...
     'R', {}, ...
     'T', {});
 
-for i=1:100
+for i=1:10
     
     cameras(i).K = K;
     
-    thetaY = (pi/50) * i;
+    thetaY = -(pi/5) * i;
     posx = 80 * cos( pi/2 + thetaY);
     posy = 80 * sin( pi/2 + thetaY);
     posz = 0;
     T = [posx; posy; posz];
     cameras(i).T = T;
-    
-    
-%     thetaY = - thetaY;
-%     RotY = [cos(thetaY), 0, sin(thetaY); 0, 1, 0; -sin(thetaY), 0, cos(thetaY)];
-
-%     R = RotY * RotX * RotZ;
-
-%     r = -T;
-%     theta = norm(r);
-%     r = r/theta;
-%     
-%     tempR = [0, -r(3), r(2); r(3), 0, -r(1); -r(2), r(1), 0];
-%     R = cos(theta)*eye(3) + (1 - cos(theta))*(r*r') + sin(theta)* tempR;
 
     iB = [1;0;0];
     jB = [0;1;0];

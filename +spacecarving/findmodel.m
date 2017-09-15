@@ -31,7 +31,7 @@ yrange = diff( ylim );
 ylim = ylim + yrange/4*[1 -1];
 
 % Now perform a rough and ready space-carving to narrow down where it is
-voxels = spacecarving.makevoxels( xlim, ylim, zlim, 6000000 );
+voxels = spacecarving.makevoxels( xlim, ylim, zlim, 600000 );
 
 for ii=1:numel(cameras)
     voxels = spacecarving.carve( voxels, cameras(ii) );
