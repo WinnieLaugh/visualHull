@@ -1,4 +1,4 @@
-function [xlim,ylim,zlim] = findmodel( cameras )
+function [xlim,ylim,zlim, N] = findmodel( cameras )
 %FINDMODEL: locate the model to be carved relative to the cameras
 %
 %   [XLIM,YLIM,ZLIM] = FINDMODEL(CAMERAS) determines the bounding box (x, y
@@ -15,13 +15,15 @@ ylim = [min( camera_positions(2,:) ), max( camera_positions(2,:) )];
 zlim = [min( camera_positions(3,:) ), max( camera_positions(3,:) )];
 
 % For the zlim we need to see where each camera is looking. 
-range = 0.6 * sqrt( diff( xlim ).^2 + diff( ylim ).^2 );
+range = sqrt( diff( xlim ).^2 + diff( ylim ).^2 );
 % range = sqrt( diff( xlim ).^2 + diff( ylim ).^2 );
 for ii=1:numel( cameras )
     viewpoint = cameras(ii).T - range * spacecarving.getcameradirection( cameras(ii) );
     zlim(1) = min( zlim(1), viewpoint(3) );
+    zlim(2) = max( zlim(2), viewpoint(3) );    
     viewpoint = cameras(ii).T + range * spacecarving.getcameradirection( cameras(ii) );
     zlim(2) = max( zlim(2), viewpoint(3) );
+    zlim(1) = min( zlim(1), viewpoint(3) );
 end
 
 % Move the limits in a bit since the object must be inside the circle
@@ -30,8 +32,16 @@ xlim = xlim + xrange/4*[1 -1];
 yrange = diff( ylim );
 ylim = ylim + yrange/4*[1 -1];
 
+
+%Try to automatically decide how many voxels are used.
+xrange = diff(xlim);
+yrange = diff(ylim);
+zrange = diff(zlim);
+
+N = xrange * yrange * zrange;
 % Now perform a rough and ready space-carving to narrow down where it is
-voxels = spacecarving.makevoxels( xlim, ylim, zlim, 600000 );
+voxels = spacecarving.makevoxels( xlim, ylim, zlim, N );
+
 
 for ii=1:numel(cameras)
     voxels = spacecarving.carve( voxels, cameras(ii) );

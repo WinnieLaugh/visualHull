@@ -16,13 +16,13 @@ end
 
 
 %% Work out the space
-[xlim,ylim,zlim] = findmodel( cameras );
+[xlim,ylim,zlim, N] = findmodel( cameras );
 
 t2 = clock;
 etime(t2,t1);
 
 %% Create a Voxel Array
-voxels = makevoxels( xlim, ylim, zlim, 600000 );
+voxels = makevoxels( xlim, ylim, zlim, N );
 starting_volume = numel( voxels.XData );
 
 figure('Position',[100 100 600 400]);
@@ -33,19 +33,6 @@ showscene( cameras, voxels );
 for ii=1:numel(cameras)
     voxels = carve( voxels, cameras(ii) );
 end
-
-figure('Position',[100 100 600 700]);
-showsurface(voxels)
-
-set(gca,'Position',[-0.2 0 1.4 0.95])
-
-title( 'Result after 10 carvings' )
-az = 0;
-% changet the vertical elevation of the view point in degree to make the
-% upside up in the view 180
-el = 180;
-view(az, el);
-axis off
 
 final_volume = numel( voxels.XData );
 fprintf( 'Final volume is %d (%1.2f%%)\n', ...

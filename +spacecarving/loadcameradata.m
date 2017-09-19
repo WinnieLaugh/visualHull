@@ -8,9 +8,6 @@ function cameras = loadcameradata(dataDir, idx)
 %   CAMERAS = LOADCAMERADATA(IDX) loads only the specified file indices.
 
 
-if nargin<2
-    idx = 1:10;
-end
 
 %Here is camera definition.
 %K represents camera Intrinsic matrix  (focal length+ distortion)3*3
@@ -24,22 +21,30 @@ cameras = struct( ...
     'T', {}, ...
     'Silhouette', {} );
 
+
 %% First, import the camera Pmatrices
 load( fullfile( dataDir, 'dino_Ps.mat') );
+
+
+%% The index of the rotate should be decided by the number of rawP
+if nargin<2
+    idx = 1:numel(rawP);
+end
+
 
 %% Now loop through loading the images
 tmwMultiWaitbar('Loading images',0);
 for ii=idx(:)'
     % We try both JPG and PPM extensions, trying JPG first since it is
     % the faster to load
-    filename = fullfile( dataDir, sprintf( 'turtle%04d.jpg', ii ) );
+    filename = fullfile( dataDir, sprintf( 'cart%04d.jpg', ii ) );
     if exist( filename, 'file' )~=2
         % Try PPM
         filename = fullfile( dataDir, sprintf( 'viff.%03d.ppm', ii ) );
         if exist( filename, 'file' )~=2
             % Failed
             error( 'SpaceCarving:ImageNotFound', ...
-                'Could not find image %d (''turtle%04d.jpg/.ppm'')', ...
+                'Could not find image %d (''cart%04d.jpg/.ppm'')', ...
                 ii, ii );
         end
     end
