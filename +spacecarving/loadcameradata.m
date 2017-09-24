@@ -37,14 +37,14 @@ tmwMultiWaitbar('Loading images',0);
 for ii=idx(:)'
     % We try both JPG and PPM extensions, trying JPG first since it is
     % the faster to load
-    filename = fullfile( dataDir, sprintf( 'cart%04d.jpg', ii ) );
+    filename = fullfile( dataDir, sprintf( 'bird%04d.jpg', ii ) );
     if exist( filename, 'file' )~=2
         % Try PPM
         filename = fullfile( dataDir, sprintf( 'viff.%03d.ppm', ii ) );
         if exist( filename, 'file' )~=2
             % Failed
             error( 'SpaceCarving:ImageNotFound', ...
-                'Could not find image %d (''cart%04d.jpg/.ppm'')', ...
+                'Could not find image %d (''bird%04d.jpg/.ppm'')', ...
                 ii, ii );
         end
     end

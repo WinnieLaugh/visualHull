@@ -8,6 +8,7 @@ function S = getsilhouette( im )
 
 % Initial segmentation based on more red than blue
 % S = im(:,:,1) > (im(:,:,3)-2);
+% S = im(:,:,1) > 150;
 S = im(:,:,1) > 50;
 
 % Remove regions touching the border or smaller than 10% of image area

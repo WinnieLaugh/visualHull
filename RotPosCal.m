@@ -28,16 +28,16 @@ cameras = struct( ...
     'T', {});
 
 % for i=1:100
-for i=1:10
+for i=1:100
     
     cameras(i).K = K;
     
-%     thetaY = -(pi/50) * i;
-    thetaY = -(pi/5) * i;
+    thetaY = -(pi/50) * i;
+%     thetaY = -(pi/5) * i;
     posx = 80 * cos( pi/2 + thetaY);
     posy = 80 * sin( pi/2 + thetaY);
-%     posz = 0;
-    posz = 80;
+    posz = 0;
+%     posz = 80;
     T = [posx; posy; posz];
     cameras(i).T = T;
 
@@ -45,18 +45,18 @@ for i=1:10
     jB = [0;1;0];
     kB = [0;0;1];
     
-%     iA = [cos(pi + thetaY), sin(pi + thetaY), 0];
-%     jA = [0,0,-1];
-%     kA = [cos(pi*1.5 + thetaY), sin(pi*1.5 + thetaY), 0];
-
-    t = - (T / norm(T));
-    yt = t;
-    yt(1) = -yt(1);
-    yt(2) = -yt(2);
-    
     iA = [cos(pi + thetaY), sin(pi + thetaY), 0];
-    jA = yt';
-    kA = t';
+    jA = [0,0,-1];
+    kA = [cos(pi*1.5 + thetaY), sin(pi*1.5 + thetaY), 0];
+
+%     t = - (T / norm(T));
+%     yt = t;
+%     yt(1) = -yt(1);
+%     yt(2) = -yt(2);
+%     
+%     iA = [cos(pi + thetaY), sin(pi + thetaY), 0];
+%     jA = yt';
+%     kA = t';
 
     aRb = [iA*iB, iA*jB, iA*kB; jA*iB, jA*jB, jA*kB; kA*iB, kA*jB, kA*kB];
     cameras(i).R = aRb;
