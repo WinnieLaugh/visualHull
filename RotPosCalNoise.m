@@ -1,4 +1,4 @@
-function cameras = RotPosCalNoise(percentage)
+function cameras = RotPosCalNoise(percentage, percentageRot)
 
 %% intrinsic Parameters
 nw = 320;
@@ -40,25 +40,22 @@ sigmaz = diff(zlim) * percentage;
 %% Ouput filepath
 dataDir = fullfile( fileparts( mfilename( 'fullpath' ) ), 'Noise' );
 filename_pos = fullfile( dataDir, sprintf('Pos%.4f.txt', percentage) );
-filename_rot = fullfile( dataDir, sprintf('Rot%.4f.txt', percentage) );
+filename_rot = fullfile( dataDir, sprintf('Rot%.4f.txt', percentageRot) );
 
 fid_pos = fopen(filename_pos, 'w');
 fid_rot = fopen(filename_rot, 'w');    
 
 %% Generating Camera Parameters with noise
 for i=1:100
-% for i=1:10
     
     cameras(i).K = K;
     
     thetaY = -(pi/50) * i;
-%     thetaY = -(pi/5) * i;
     posx = 80 * cos( pi/2 + thetaY);
     posy = 80 * sin( pi/2 + thetaY);
     posz = 0;
-%     posz = 80;
     T = [posx; posy; posz];
- 
+%  
     noisex = normrnd(0,sigmax);
     noisey = normrnd(0,sigmay);
     noisez = normrnd(0,sigmaz);
@@ -67,43 +64,34 @@ for i=1:100
     
     fprintf(fid_pos, '%d\n%f\n%f\n%f\n', i, T(1), T(2), T(3));
     
-%     cameras(i).T = T;
-% 
     iB = [1;0;0];
     jB = [0;1;0];
     kB = [0;0;1];
     
-    noise_theta = normrnd(0, 2* pi * percentage);
+    noise_theta = normrnd(0, 2* pi * percentageRot);
     thetaY = thetaY + noise_theta;
+    
     iA = [cos(pi + thetaY), sin(pi + thetaY), 0];
-    jA = [0,0,-1];
-    kA = [cos(pi*1.5 + thetaY), sin(pi*1.5 + thetaY), 0];
+    %in 3ds max, it is a little bit different from the typical camera
+    %parameters, ie. z is the opposite and y is the opposite
+    jA = [0,0,1];
+    kA = [-cos(pi*1.5 + thetaY), -sin(pi*1.5 + thetaY), 0];
 
-% %     t = - (T / norm(T));
-% %     yt = t;
-% %     yt(1) = -yt(1);
-% %     yt(2) = -yt(2);
-% %     
-% %     iA = [cos(pi + thetaY), sin(pi + thetaY), 0];
-% %     jA = yt';
-% %     kA = t';
-% % 
     aRb = [iA*iB, iA*jB, iA*kB; jA*iB, jA*jB, jA*kB; kA*iB, kA*jB, kA*kB];
-    eulZYX = rotm2eul(aRb,'ZYX');
-    fprintf(fid_rot, '%d\n%f\n%f\n%f\n', i, eulZYX(3), eulZYX(2), eulZYX(1));
+%     eulZYX = rotm2eul(aRb,'ZYX');
+%     
+%     eulZYX(1) = eulZYX(1) / pi * 180;
+%     eulZYX(2) = eulZYX(2) / pi * 180;
+%     eulZYX(3) = eulZYX(3) / pi * 180;
+%     
+%     fprintf(fid_rot, '%d\n%f\n%f\n%f\n', i, eulZYX(1), eulZYX(2), eulZYX(3));
 
+    fprintf(fid_rot, '%d\n%f\n%f\n%f\n%f\n%f\n%f\n%f\n%f\n%f\n',...
+            i,...
+            aRb(1,1), aRb(1,2), aRb(1,3),...
+            aRb(2,1), aRb(2,2), aRb(2,3),...
+            aRb(3,1), aRb(3,2), aRb(3,3));
 
-    
-%     cameras(i).R = aRb;
-%         
-%     T = - aRb*T;
-%     
-%     comRP =[aRb, T];
-%     
-%     p0 = K * comRP ;
-%     
-%     cameras(i).P = p0;
-    
 end
 
 %%

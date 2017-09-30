@@ -1,4 +1,4 @@
-function [ dis ] = compare(percentage)
+function [ dis ] = compare(percentage, percentageRot)
 %COMPARE Summary of this function goes here
 %   Detailed explanation goes here
 
@@ -6,10 +6,10 @@ import spacecarving.*
 
 %%Set the data path
 dataDir = fullfile( fileparts( mfilename( 'fullpath' ) ), 'bird' );
-dataDir_noise = fullfile( fileparts( mfilename( 'fullpath' ) ), sprintf('NoiseImage\%.4f', percentage) );
+dataDir_noise = fullfile( fileparts( mfilename( 'fullpath' ) ), sprintf('NoiseImage\\%.4f+%.4f', percentage, percentageRot) );
 
-dataDit_out_origin = fullfile( fileparts( mfilename( 'fullpath' ) ), Sprintf('Thin\Origin\%.4f', percentage) );
-dataDit_out_noise = fullfile( fileparts( mfilename( 'fullpath' ) ), Sprintf('Thin\Noise\%.4f', percentage) );
+% dataDit_out_origin = fullfile( fileparts( mfilename( 'fullpath' ) ), sprintf('Thin\\Origin\\%.4f+\\%.4f', percentage,percentageRot) );
+% dataDit_out_noise = fullfile( fileparts( mfilename( 'fullpath' ) ), sprintf('Thin\\Noise\\%.4f+\\%.4f', percentage,percentageRot) );
 
 
 threhold = 50;
@@ -60,15 +60,19 @@ for i = 1:100
     Diff = zeros(a0,b0);
 
     %----------------------------Line thining------------------------------
-
+% 
     S_out = bwmorph(S, 'thin', Inf);
     S_noise_out = bwmorph(S_noise, 'thin', Inf);
+
+%     S_out = bwmorph(S, 'skel');
+%     S_noise_out = bwmorph(S_noise, 'skel');
     
 
-    filenameOut = fullfile( dataDit_out_origin, sprintf( 'birdorigin%04d.jpg', i ));
-    imwrite(S_out, filenameOut, 'jpg');
-    filenameOut_Noise = fullfile( dataDit_out_noise, sprintf( 'birdnoise%04d.jpg', i ));
-    imwrite(S_noise_out, filenameOut_Noise, 'jpg');
+%     imshow(S_out);
+%     filenameOut = fullfile( dataDit_out_origin, sprintf( 'birdorigin%04d.jpg', i ));
+%     imwrite(S_out, filenameOut, 'jpg');
+%     filenameOut_Noise = fullfile( dataDit_out_noise, sprintf( 'birdnoise%04d.jpg', i ));
+%     imwrite(S_noise_out, filenameOut_Noise, 'jpg');
     
     
     
@@ -102,9 +106,13 @@ for i = 1:100
             end
         end
     end
-      
     
-    percentage(i) = distance / count;
+    if count == 0
+        percentage(i) = 0;
+    else
+        percentage(i) = distance / count;
+    end
+    
 end
 
 dis = mean(percentage);
